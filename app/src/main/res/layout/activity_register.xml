@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".activities.RegisterActivity">
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical">
+
+       <TextView
+           style="@style/PageTitleText"
+           android:gravity="center"
+           android:layout_gravity="center"
+           android:layout_marginTop="20dp"
+           android:text="@string/register_text" />
+
+       <com.google.android.material.textfield.TextInputLayout
+           android:id="@+id/registerEmail"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:hint="@string/email_text"
+           android:layout_marginBottom="10dp"
+           style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+           <com.google.android.material.textfield.TextInputEditText
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:inputType="textEmailAddress" />
+
+       </com.google.android.material.textfield.TextInputLayout>
+
+       <com.google.android.material.textfield.TextInputLayout
+           android:id="@+id/registerUsername"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginBottom="10dp"
+           android:hint="@string/name_text"
+           style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+           <com.google.android.material.textfield.TextInputEditText
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:inputType="none" />
+
+       </com.google.android.material.textfield.TextInputLayout>
+
+       <com.google.android.material.textfield.TextInputLayout
+           android:id="@+id/registerPassword"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginBottom="10dp"
+           android:hint="@string/password_text"
+           style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+           <com.google.android.material.textfield.TextInputEditText
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:inputType="textPassword" />
+
+       </com.google.android.material.textfield.TextInputLayout>
+
+       <com.google.android.material.textfield.TextInputLayout
+           android:id="@+id/registerPasswordConfirm"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginBottom="10dp"
+           android:hint="@string/confirm_password_text"
+           style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+           <com.google.android.material.textfield.TextInputEditText
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:inputType="textPassword" />
+
+       </com.google.android.material.textfield.TextInputLayout>
+
+       <androidx.appcompat.widget.AppCompatButton
+           android:id="@+id/registerSubmitButton"
+           style="@style/mediumRoundButton"
+           android:layout_gravity="center"
+           android:layout_width="323dp"
+           android:layout_marginTop="20dp"
+           android:text="@string/register_text"
+           android:onClick="performButtonFunctionalities" />
+
+
+       <TextView
+           style="@style/loginText"
+           android:gravity="center"
+           android:layout_marginTop="20dp"
+           android:text="@string/existing_account_text" />
+
+       <androidx.appcompat.widget.AppCompatButton
+           android:id="@+id/loginRedirectButton"
+           style="@style/mediumRoundButton"
+           android:layout_width="157dp"
+           android:layout_gravity="center"
+           android:layout_marginTop="20dp"
+           android:text="@string/login_text"
+           android:onClick="performButtonFunctionalities" />
+
+   </LinearLayout>
+</ScrollView>

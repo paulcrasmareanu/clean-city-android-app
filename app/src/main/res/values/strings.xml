@@ -12,4 +12,8 @@
     <string name="login_text">Login</string>
     <string name="no_account_text">Don\'t have an account?</string>
     <string name="register_text">Register</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="name_text">Name</string>
+    <string name="confirm_password_text">Confirm Password</string>
+    <string name="existing_account_text">Already have an account?</string>
 </resources>
