@@ -34,5 +34,6 @@ class LoginActivity : AppCompatActivity() {
 
     private fun loginUser(username: String, password: String) {
         Log.d(TAG, "$username $password")
+        AppNavigationStartActivity.transitionToMaps(this)
     }
 }
