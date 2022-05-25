@@ -35,11 +35,26 @@
        </com.google.android.material.textfield.TextInputLayout>
 
        <com.google.android.material.textfield.TextInputLayout
-           android:id="@+id/registerUsername"
+           android:id="@+id/registerFirstName"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:layout_marginBottom="10dp"
-           android:hint="@string/name_text"
+           android:hint="@string/first_name_text"
+           style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+           <com.google.android.material.textfield.TextInputEditText
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:inputType="none" />
+
+       </com.google.android.material.textfield.TextInputLayout>
+
+       <com.google.android.material.textfield.TextInputLayout
+           android:id="@+id/registerLastName"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginBottom="10dp"
+           android:hint="@string/last_name_text"
            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
            <com.google.android.material.textfield.TextInputEditText
