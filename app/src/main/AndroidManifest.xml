@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CleanCity" >
         <activity
+            android:name=".activities.EditIssueActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.CreateIssueActivity"
             android:exported="false"
             android:label="@string/title_activity_create_issue"
