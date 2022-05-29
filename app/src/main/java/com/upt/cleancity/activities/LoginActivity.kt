@@ -63,6 +63,7 @@ class LoginActivity : AppCompatActivity() {
                             AppState.currentToken = token
                             Toast.makeText(this@LoginActivity, "Success: now redirect", Toast.LENGTH_SHORT).show()
                             //todo get user and redirect to maps
+                            AppNavigationStartActivity.transitionToMaps(this@LoginActivity)
                         } else {
                             Log.w(TAG, "Failed code: " + response.code())
                             Log.w(TAG, response.body().toString())

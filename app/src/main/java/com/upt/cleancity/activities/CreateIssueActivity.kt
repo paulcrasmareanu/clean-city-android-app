@@ -15,7 +15,11 @@ class CreateIssueActivity : AppCompatActivity() {
         const val TAG = "__CreateIssueActivity"
     }
 
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        //todo retrieve latitude and longitude from intent
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_issue)
     }
@@ -23,7 +27,7 @@ class CreateIssueActivity : AppCompatActivity() {
     fun performButtonFunctionalities(view: View) {
         when (view.id) {
             R.id.issueSubmitButton -> createIssue(issueCreateTitle.editText?.text.toString(), issueCreateDescription.editText?.text.toString())
-            R.id.issueCreateBackButton -> finish()
+            R.id.issueCreateBackButton -> finish() //todo remove marker in this case
         }
     }
 
@@ -37,10 +41,14 @@ class CreateIssueActivity : AppCompatActivity() {
         //todo pass lat and long to activity when creating issue
         val issue = Issue(
             0,
-            title, description
+            title, description,
+            latitude = latitude,
+            longitude = longitude
         )
 
         //todo persist issue to backend
+
+        finish()
     }
 
     private fun isValidForm(): Boolean {

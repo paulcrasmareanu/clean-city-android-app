@@ -18,6 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.upt.cleancity.R
+import com.upt.cleancity.utils.AppNavigationStartActivity
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -48,7 +49,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    //todo find how to open edit issue activity by pressing and holding a marker
     override fun onMapReady(googleMap: GoogleMap) {
+        //todo load all issues that user created and place the markers on the map
         mMap = googleMap
 
         mMap.setOnMapClickListener(this)
@@ -59,6 +62,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     override fun onMapClick(latLng: LatLng) {
         val markerOptions = MarkerOptions().position(latLng)
         mMap.addMarker(markerOptions)
+        AppNavigationStartActivity.transitionToCreateIssue(this, latLng.latitude, latLng.longitude)
     }
 
     private fun fetchLastLocation() {
