@@ -4,9 +4,7 @@ import com.upt.cleancity.model.LoginContract
 import com.upt.cleancity.model.Token
 import com.upt.cleancity.model.User
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface UserService {
 
@@ -16,7 +14,7 @@ interface UserService {
     @POST("api/Auth/login/")
     fun loginUser(@Body login: LoginContract) : Call<Token>
 
-    @GET("api/User")
-    fun getAllUsers(): Call<List<User>>
+    @GET("api/User/byEmail/{email}")
+    fun getUserByEmail(@Path("email") email: String, @Header("Authorization") value: String): Call<User>
 
 }

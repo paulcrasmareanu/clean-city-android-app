@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.upt.cleancity.R
 import com.upt.cleancity.model.User
+import com.upt.cleancity.service.UserService
 import com.upt.cleancity.service.factory.UserServiceFactory
 import kotlinx.android.synthetic.main.activity_register.*
 import retrofit2.Call
@@ -15,6 +16,8 @@ import retrofit2.Response
 
 class RegisterActivity : AppCompatActivity() {
 
+    private lateinit var userService: UserService
+
     companion object {
         const val TAG = "__RegisterActivity"
     }
@@ -22,6 +25,8 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        userService = UserServiceFactory.makeService(this)
     }
 
     fun performButtonFunctionalities(view: View) {
@@ -69,7 +74,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun createUser(user: User) {
-        UserServiceFactory.makeService(this@RegisterActivity).createNewUser(user).enqueue(object : Callback<Void> {
+        userService.createNewUser(user).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.w(TAG, "createNewUser: onFailed()", t)
                 Toast.makeText(this@RegisterActivity, "Something went wrong", Toast.LENGTH_SHORT).show()

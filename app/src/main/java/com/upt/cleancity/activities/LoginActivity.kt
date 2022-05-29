@@ -10,6 +10,7 @@ import com.upt.cleancity.R
 import com.upt.cleancity.model.LoginContract
 import com.upt.cleancity.model.Token
 import com.upt.cleancity.model.User
+import com.upt.cleancity.service.UserService
 import com.upt.cleancity.service.factory.UserServiceFactory
 import com.upt.cleancity.utils.AppNavigationStartActivity
 import com.upt.cleancity.utils.AppState
@@ -19,6 +20,8 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
+    private lateinit var userService: UserService
+
     companion object {
         const val TAG = "__LoginActivity"
     }
@@ -26,6 +29,8 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        userService = UserServiceFactory.makeService(this)
     }
 
     fun performButtonFunctionalities(view: View) {
@@ -48,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
             return
         } else {
             val contract = LoginContract(email, password)
-            UserServiceFactory.makeService(this@LoginActivity).loginUser(contract).enqueue(object : Callback<Token> {
+            userService.loginUser(contract).enqueue(object : Callback<Token> {
                 override fun onFailure(call: Call<Token>, t: Throwable) {
                     Log.w(TAG, "loginUser: onFailed()", t)
                     Toast.makeText(this@LoginActivity, "Something went wrong during login", Toast.LENGTH_SHORT).show()
@@ -61,9 +66,28 @@ class LoginActivity : AppCompatActivity() {
                         if (response.code() == 200) {
                             val token = response.body()!!
                             AppState.currentToken = token
-                            Toast.makeText(this@LoginActivity, "Success: now redirect", Toast.LENGTH_SHORT).show()
-                            //todo get user and redirect to maps
-                            AppNavigationStartActivity.transitionToMaps(this@LoginActivity)
+
+                            userService.getUserByEmail(email, "Bearer " + token.accessToken).enqueue(object : Callback<User> {
+                                override fun onResponse(call: Call<User>, response: Response<User>
+                                ) {
+                                    if (response.code() == 200) {
+                                        Log.d(TAG, "Current user email: " + response.body()!!.email)
+                                        val user = response.body()!!
+                                        AppState.loggedInUser = user
+                                        AppNavigationStartActivity.transitionToMaps(this@LoginActivity)
+                                    } else {
+                                        Log.w(TAG, "Failed get user code: " + response.code())
+                                        Log.w(TAG, response.body().toString())
+                                        Toast.makeText(this@LoginActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<User>, t: Throwable) {
+                                    Log.w(TAG, "getUserByEmail: onFailed()", t)
+                                    Toast.makeText(this@LoginActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                                }
+
+                            })
                         } else {
                             Log.w(TAG, "Failed code: " + response.code())
                             Log.w(TAG, response.body().toString())

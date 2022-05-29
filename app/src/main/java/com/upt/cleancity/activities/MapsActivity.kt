@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.upt.cleancity.R
 import com.upt.cleancity.utils.AppNavigationStartActivity
+import com.upt.cleancity.utils.AppState
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -28,6 +29,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private lateinit var mapFragment: SupportMapFragment
+
+    private var loggedInUser = AppState.loggedInUser
+    private var authToken = "Bearer " + AppState.currentToken.accessToken
+
+    companion object {
+        const val TAG = "__MapsActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,8 +82,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
 
         val task = fusedLocationProviderClient.lastLocation
         task.addOnSuccessListener { location ->
-            currentLocation = location
-            updateCurrentLocation()
+            if (location != null) {
+                currentLocation = location
+                updateCurrentLocation()
+            }
         }
     }
 

@@ -10,7 +10,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 object UserServiceFactory {
 
     fun makeService(context: Context): UserService {
-
         val builder = Retrofit.Builder()
             .baseUrl(AppState.API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
