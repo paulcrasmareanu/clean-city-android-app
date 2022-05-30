@@ -32,4 +32,7 @@
     <string name="description_text">Description</string>
     <string name="submit_text">Submit</string>
     <string name="edit_issue_text">Edit Issue</string>
+    <string name="delete_issue_text">Delete Issue</string>
+    <string name="issue_title_text">Issue Title</string>
+    <string name="sample_description_text">Sample description here</string>
 </resources>

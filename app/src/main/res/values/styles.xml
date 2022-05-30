@@ -26,6 +26,18 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="mediumLightText" parent="viewParent">
+        <item name="android:textColor">@color/containerColor</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="bigLightText" parent="viewParent">
+        <item name="android:textColor">@color/containerColor</item>
+        <item name="android:textSize">27sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="editProfileText" parent="parent">
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/containerColor</item>

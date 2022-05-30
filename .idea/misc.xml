@@ -3,24 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/drawable/ic_baseline_west_24.xml" value="0.317" />
-        <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/drawable/ic_baseline_west_24_yellow.xml" value="0.317" />
-        <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/drawable/selectable_back_button.xml" value="0.316" />
-        <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/layout/activity_create_issue.xml" value="0.3140625" />
-        <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/layout/activity_edit_issue.xml" value="0.3140625" />
-      </map>
-    </option>
-  </component>
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
+        <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/drawable/border_shadow.xml" value="0.317" />
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/drawable/ic_baseline_west_24.xml" value="0.317" />
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/drawable/ic_baseline_west_24_yellow.xml" value="0.317" />
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/drawable/selectable_back_button.xml" value="0.316" />
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/layout/activity_create_issue.xml" value="0.3140625" />
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/layout/activity_edit_issue.xml" value="0.3140625" />
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/layout/activity_login.xml" value="0.3140625" />
+        <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/layout/activity_maps.xml" value="0.22146739130434784" />
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/layout/activity_register.xml" value="0.3140625" />
+        <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/layout/activity_view_issue.xml" value="0.3140625" />
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/xml/network_security_config.xml" value="0.3177083333333333" />
       </map>
     </option>

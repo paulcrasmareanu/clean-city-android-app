@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ViewIssueActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="30dp">
+
+        <View
+            android:id="@+id/issueViewBackButton"
+            android:background="@drawable/selectable_back_button"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginBottom="10dp"
+            android:onClick="performButtonFunctionalities" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/border_shadow"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:id="@+id/issueViewTitle"
+                android:layout_width="match_parent"
+                style="@style/bigLightText"
+                android:text="@string/issue_title_text" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/description_text"
+                android:textColor="@color/colorAccent"
+                android:layout_marginTop="5dp"
+                style="@style/mediumLightText" />
+
+            <TextView
+                android:id="@+id/issueViewDescription"
+                style="@style/mediumLightText"
+                android:text="@string/sample_description_text" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/issueViewEditButton"
+            style="@style/mediumRoundButton"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_issue_text"
+            android:onClick="performButtonFunctionalities" />
+
+        <Button
+            android:id="@+id/issueViewDeleteButton"
+            style="@style/mediumRoundButton"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_issue_text"
+            android:onClick="performButtonFunctionalities" />
+
+    </LinearLayout>
+
+</ScrollView>

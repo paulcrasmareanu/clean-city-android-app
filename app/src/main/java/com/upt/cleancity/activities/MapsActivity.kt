@@ -6,7 +6,6 @@ import android.location.Location
 import android.location.LocationRequest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -16,12 +15,16 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.upt.cleancity.R
+import com.upt.cleancity.model.Issue
+import com.upt.cleancity.service.IssueService
+import com.upt.cleancity.service.factory.IssueServiceFactory
 import com.upt.cleancity.utils.AppNavigationStartActivity
 import com.upt.cleancity.utils.AppState
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var currentLocation: Location
@@ -30,6 +33,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
 
     private lateinit var mapFragment: SupportMapFragment
 
+    private lateinit var issueService: IssueService
     private var loggedInUser = AppState.loggedInUser
     private var authToken = "Bearer " + AppState.currentToken.accessToken
 
@@ -40,6 +44,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        issueService = IssueServiceFactory.makeService(this)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -51,8 +56,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -63,6 +67,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         mMap = googleMap
 
         mMap.setOnMapClickListener(this)
+        mMap.setOnMarkerClickListener(this)
 
         fetchLastLocation()
     }
@@ -71,6 +76,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         val markerOptions = MarkerOptions().position(latLng)
         mMap.addMarker(markerOptions)
         AppNavigationStartActivity.transitionToCreateIssue(this, latLng.latitude, latLng.longitude)
+    }
+
+    private fun loadExistingIssueMarkers(issues: List<Issue>) {
+        issues.forEach {
+            mMap.addMarker(MarkerOptions().position(LatLng(it.latitude, it.longitude)))
+        }
     }
 
     private fun fetchLastLocation() {
@@ -102,5 +113,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                 fetchLastLocation()
             }
         }
+    }
+
+    override fun onMarkerClick(p0: Marker): Boolean {
+        //todo decide best solution to transit to view activity: get issue by ID or get issue from in-memory list
+        AppNavigationStartActivity.transitionToViewIssue(this)
+        return true
     }
 }
