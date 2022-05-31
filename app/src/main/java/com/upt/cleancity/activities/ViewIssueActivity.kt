@@ -1,5 +1,6 @@
 package com.upt.cleancity.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +10,6 @@ import com.upt.cleancity.R
 import com.upt.cleancity.model.Issue
 import com.upt.cleancity.service.IssueService
 import com.upt.cleancity.service.factory.IssueServiceFactory
-import com.upt.cleancity.utils.AppNavigationStartActivity
 import com.upt.cleancity.utils.AppState
 import kotlinx.android.synthetic.main.activity_view_issue.*
 import retrofit2.Call
@@ -20,6 +20,8 @@ class ViewIssueActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "__ViewIssueActivity"
+        const val DELETE_MARKER = 201
+        const val UPDATE_ISSUE = 202
     }
 
     private lateinit var selectedIssue: Issue
@@ -36,6 +38,25 @@ class ViewIssueActivity : AppCompatActivity() {
         val intent = intent
         issueId = intent.getStringExtra("ISSUE_ID").toString()
 
+        getIssueFromDatabase()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == UPDATE_ISSUE) {
+            recreate()
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    fun performButtonFunctionalities(view: View) {
+        when(view.id) {
+            R.id.issueViewBackButton -> finish()
+            R.id.issueViewEditButton -> goToEditActivity(selectedIssue)
+            R.id.issueViewDeleteButton -> deleteIssue()
+        }
+    }
+
+    private fun getIssueFromDatabase() {
         issueService.getIssue(issueId).enqueue(object : Callback<Issue> {
             override fun onResponse(call: Call<Issue>, response: Response<Issue>) {
                 Log.d(TAG, "getIssue: onResponse()")
@@ -55,27 +76,40 @@ class ViewIssueActivity : AppCompatActivity() {
         })
     }
 
-    fun performButtonFunctionalities(view: View) {
-        when(view.id) {
-            R.id.issueViewBackButton -> finish()
-            R.id.issueViewEditButton -> goToEditActivity(selectedIssue)
-            R.id.issueViewDeleteButton -> deleteIssue()
-        }
-    }
-
     private fun goToEditActivity(issue: Issue) {
-        AppNavigationStartActivity.transitionToEditIssue(this, issue)
+        val intent = Intent(this, EditIssueActivity::class.java)
+        intent.putExtra("ISSUE", issue)
+        startActivityForResult(intent, UPDATE_ISSUE)
     }
 
     private fun deleteIssue() {
-        //todo add service method to delete issue
-        finish()
+        issueService.deleteIssue(issueId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d(TAG, "deleteIssue: onResponse()")
+
+                if (response.code() == 200 || response.code() == 204) {
+                    val intent = Intent()
+                    intent.putExtra("ISSUE_ID", issueId)
+                    setResult(DELETE_MARKER, intent)
+                    finish()
+                } else {
+                    Log.w(TAG, "Error code: ${response.code()}")
+                    Toast.makeText(this@ViewIssueActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.w(TAG, "deleteIssue: onFailure()", t)
+                Toast.makeText(this@ViewIssueActivity, "Failed to delete issue", Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
 
     private fun loadIssueDetails(issue: Issue) {
         issueViewTitle.text = issue.title
         issueViewDescription.text = issue.description
-        if (issue.id == userId) {
+        if (issue.ownerId == userId) {
             issueViewEditButton.visibility = View.VISIBLE
             issueViewDeleteButton.visibility = View.VISIBLE
         } else {

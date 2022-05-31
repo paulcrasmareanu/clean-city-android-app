@@ -3,7 +3,6 @@ package com.upt.cleancity.utils
 import android.content.Context
 import android.content.Intent
 import com.upt.cleancity.activities.*
-import com.upt.cleancity.model.Issue
 
 class AppNavigationStartActivity {
     companion object {
@@ -13,25 +12,6 @@ class AppNavigationStartActivity {
 
         fun transitionToMaps(context: Context) {
             context.startActivity(Intent(context, MapsActivity::class.java))
-        }
-
-        fun transitionToCreateIssue(context: Context, lat: Double, long: Double) {
-            val intent = Intent(context, CreateIssueActivity::class.java)
-            intent.putExtra("MARKER_LATITUDE", lat)
-            intent.putExtra("MARKER_LONGITUDE", long)
-            context.startActivity(intent)
-        }
-
-        fun transitionToViewIssue(context: Context, issueId: String) {
-            val intent = Intent(context, ViewIssueActivity::class.java)
-            intent.putExtra("ISSUE_ID", issueId)
-            context.startActivity(intent)
-        }
-
-        fun transitionToEditIssue(context: Context, issue: Issue) {
-            val intent = Intent(context, EditIssueActivity::class.java)
-            intent.putExtra("ISSUE", issue)
-            context.startActivity(intent)
         }
     }
 }

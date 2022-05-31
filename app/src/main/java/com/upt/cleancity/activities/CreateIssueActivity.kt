@@ -1,5 +1,6 @@
 package com.upt.cleancity.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,18 +10,24 @@ import com.upt.cleancity.R
 import com.upt.cleancity.model.Issue
 import com.upt.cleancity.service.IssueService
 import com.upt.cleancity.service.factory.IssueServiceFactory
+import com.upt.cleancity.utils.AppState
 import kotlinx.android.synthetic.main.activity_create_issue.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class CreateIssueActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "__CreateIssueActivity"
+        const val ADD_MARKER = 200
     }
 
     private lateinit var issueService: IssueService
 
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
+    private var userId = AppState.loggedInUser.id
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,15 +55,36 @@ class CreateIssueActivity : AppCompatActivity() {
         }
 
         val issue = Issue(
-            id = "",
-            title, description,
-            latitude = latitude,
-            longitude = longitude
+            title = title,
+            description = description,
+            lat = latitude,
+            long = longitude,
+            ownerId = userId
         )
 
-        //todo persist issue to backend
+        issueService.saveIssue(issue).enqueue(object : Callback<Issue> {
+            override fun onResponse(call: Call<Issue>, response: Response<Issue>) {
+                Log.d(TAG, "saveIssue: onResponse()")
+                if (response.code() == 200) {
+                    val savedIssue = response.body()!!
+                    val intent = Intent()
+                    intent.putExtra("ISSUE_ID", savedIssue.id)
+                    intent.putExtra("ISSUE_LATITUDE", savedIssue.lat)
+                    intent.putExtra("ISSUE_LONGITUDE", savedIssue.long)
+                    setResult(ADD_MARKER, intent)
+                    finish()
+                } else {
+                    Log.w(TAG, "Error code: ${response.code()}")
+                    Toast.makeText(this@CreateIssueActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                }
+            }
 
-        finish()
+            override fun onFailure(call: Call<Issue>, t: Throwable) {
+                Log.w(TAG, "saveIssue: onFailure()", t)
+                Toast.makeText(this@CreateIssueActivity, "Failed to save issue", Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
 
     private fun isValidForm(): Boolean {

@@ -1,6 +1,7 @@
 package com.upt.cleancity.activities
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationRequest
@@ -23,7 +24,6 @@ import com.upt.cleancity.R
 import com.upt.cleancity.model.Issue
 import com.upt.cleancity.service.IssueService
 import com.upt.cleancity.service.factory.IssueServiceFactory
-import com.upt.cleancity.utils.AppNavigationStartActivity
 import com.upt.cleancity.utils.AppState
 import retrofit2.Call
 import retrofit2.Callback
@@ -45,6 +45,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
 
     companion object {
         const val TAG = "__MapsActivity"
+        const val ADD_MARKER = 200
+        const val DELETE_MARKER = 201
+        const val VIEW_ISSUE = 203
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +70,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    //todo find how to open edit issue activity by pressing and holding a marker
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -79,9 +81,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     }
 
     override fun onMapClick(latLng: LatLng) {
-        val markerOptions = MarkerOptions().position(latLng)
-        mMap.addMarker(markerOptions)
-        AppNavigationStartActivity.transitionToCreateIssue(this, latLng.latitude, latLng.longitude)
+        val intent = Intent(this, CreateIssueActivity::class.java)
+        intent.putExtra("MARKER_LATITUDE", latLng.latitude)
+        intent.putExtra("MARKER_LONGITUDE", latLng.longitude)
+        startActivityForResult(intent, ADD_MARKER)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (resultCode) {
+            ADD_MARKER -> {
+                val issueId = data!!.getStringExtra("ISSUE_ID")
+                val latitude = data.getDoubleExtra("ISSUE_LATITUDE", 0.0)
+                val longitude = data.getDoubleExtra("ISSUE_LONGITUDE", 0.0)
+                addMarkerForIssue(latitude, longitude, issueId!!)
+            }
+            DELETE_MARKER -> {
+                val issueId = data!!.getStringExtra("ISSUE_ID")
+                val marker = issueMarkerMap[issueId]
+                marker!!.remove()
+                issueMarkerMap.remove(issueId)
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun loadAllIssuesAndMarkers() {
@@ -107,10 +129,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
 
     private fun loadExistingIssueMarkers(issues: List<Issue>) {
         issues.forEach {
-            val marker = mMap.addMarker(MarkerOptions().position(LatLng(it.latitude, it.longitude)).title(it.id))
-            if (marker != null) {
-                issueMarkerMap[it.id] = marker
-            }
+            addMarkerForIssue(it.lat, it.long, it.id!!)
+        }
+    }
+
+    private fun addMarkerForIssue(latitude: Double, longitude: Double, issueId: String) {
+        val marker = mMap.addMarker(MarkerOptions().position(LatLng(latitude, longitude)).title(issueId))
+        if (marker != null) {
+            issueMarkerMap[issueId] = marker
         }
     }
 
@@ -146,7 +172,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        AppNavigationStartActivity.transitionToViewIssue(this, marker.title!!)
+        val intent = Intent(this, ViewIssueActivity::class.java)
+        intent.putExtra("ISSUE_ID", marker.title!!)
+        startActivityForResult(intent, VIEW_ISSUE)
         return true
     }
 }
