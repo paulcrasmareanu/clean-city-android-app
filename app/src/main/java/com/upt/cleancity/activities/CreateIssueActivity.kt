@@ -48,7 +48,7 @@ class CreateIssueActivity : AppCompatActivity() {
         }
 
         val issue = Issue(
-            0,
+            id = "",
             title, description,
             latitude = latitude,
             longitude = longitude

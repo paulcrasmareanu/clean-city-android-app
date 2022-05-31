@@ -2,6 +2,7 @@ package com.upt.cleancity.service.factory
 
 import android.content.Context
 import com.upt.cleancity.service.IssueService
+import com.upt.cleancity.service.common.AuthInterceptor
 import com.upt.cleancity.service.common.CustomHttpClient
 import com.upt.cleancity.utils.AppState
 import retrofit2.Retrofit
@@ -15,7 +16,7 @@ object IssueServiceFactory {
             .addConverterFactory(GsonConverterFactory.create())
 
         return builder
-            .client(CustomHttpClient.getCustomHttpClient(context))
+            .client(CustomHttpClient.getCustomHttpClientBuilder(context).addInterceptor(AuthInterceptor()).build())
             .build().create(IssueService::class.java)
     }
 

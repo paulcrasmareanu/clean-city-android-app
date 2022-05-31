@@ -6,6 +6,8 @@ import android.location.Location
 import android.location.LocationRequest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -23,6 +25,9 @@ import com.upt.cleancity.service.IssueService
 import com.upt.cleancity.service.factory.IssueServiceFactory
 import com.upt.cleancity.utils.AppNavigationStartActivity
 import com.upt.cleancity.utils.AppState
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
@@ -35,7 +40,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
 
     private lateinit var issueService: IssueService
     private var loggedInUser = AppState.loggedInUser
-    private var authToken = "Bearer " + AppState.currentToken.accessToken
+
+    private var issueMarkerMap = mutableMapOf<String, Marker>()
 
     companion object {
         const val TAG = "__MapsActivity"
@@ -63,13 +69,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
      */
     //todo find how to open edit issue activity by pressing and holding a marker
     override fun onMapReady(googleMap: GoogleMap) {
-        //todo load all issues that user created and place the markers on the map
         mMap = googleMap
 
         mMap.setOnMapClickListener(this)
         mMap.setOnMarkerClickListener(this)
 
         fetchLastLocation()
+        loadAllIssuesAndMarkers()
     }
 
     override fun onMapClick(latLng: LatLng) {
@@ -78,9 +84,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         AppNavigationStartActivity.transitionToCreateIssue(this, latLng.latitude, latLng.longitude)
     }
 
+    private fun loadAllIssuesAndMarkers() {
+        issueService.getAllIssues().enqueue(object : Callback<List<Issue>> {
+            override fun onResponse(call: Call<List<Issue>>, response: Response<List<Issue>>) {
+                Log.d(TAG, "getAllIssues: onResponse()")
+                if (response.code() == 200) {
+                    val issues = response.body()!!
+                    loadExistingIssueMarkers(issues)
+                } else {
+                    Log.w(TAG, "Error code: " + response.code())
+                    Toast.makeText(this@MapsActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Issue>>, t: Throwable) {
+                Log.w(TAG, "getAllIssues: onFailure()", t)
+                Toast.makeText(this@MapsActivity, "Failed to retrieve issues", Toast.LENGTH_SHORT).show()
+            }
+
+        })
+    }
+
     private fun loadExistingIssueMarkers(issues: List<Issue>) {
         issues.forEach {
-            mMap.addMarker(MarkerOptions().position(LatLng(it.latitude, it.longitude)))
+            val marker = mMap.addMarker(MarkerOptions().position(LatLng(it.latitude, it.longitude)).title(it.id))
+            if (marker != null) {
+                issueMarkerMap[it.id] = marker
+            }
         }
     }
 
@@ -115,9 +145,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         }
     }
 
-    override fun onMarkerClick(p0: Marker): Boolean {
-        //todo decide best solution to transit to view activity: get issue by ID or get issue from in-memory list
-        AppNavigationStartActivity.transitionToViewIssue(this)
+    override fun onMarkerClick(marker: Marker): Boolean {
+        AppNavigationStartActivity.transitionToViewIssue(this, marker.title!!)
         return true
     }
 }

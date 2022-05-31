@@ -22,8 +22,10 @@ class AppNavigationStartActivity {
             context.startActivity(intent)
         }
 
-        fun transitionToViewIssue(context: Context) {
-            context.startActivity(Intent(context, ViewIssueActivity::class.java))
+        fun transitionToViewIssue(context: Context, issueId: String) {
+            val intent = Intent(context, ViewIssueActivity::class.java)
+            intent.putExtra("ISSUE_ID", issueId)
+            context.startActivity(intent)
         }
 
         fun transitionToEditIssue(context: Context, issue: Issue) {

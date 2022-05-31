@@ -15,7 +15,7 @@ object UserServiceFactory {
             .addConverterFactory(GsonConverterFactory.create())
 
         return builder
-            .client(CustomHttpClient.getCustomHttpClient(context))
+            .client(CustomHttpClient.getCustomHttpClientBuilder(context).build())
             .build().create(UserService::class.java)
     }
 

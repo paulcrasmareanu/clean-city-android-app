@@ -15,7 +15,7 @@ import javax.net.ssl.TrustManagerFactory
 
 object CustomHttpClient {
 
-    fun getCustomHttpClient(context: Context): OkHttpClient {
+    fun getCustomHttpClientBuilder(context: Context): OkHttpClient.Builder {
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BODY
 
@@ -43,7 +43,6 @@ object CustomHttpClient {
             .hostnameVerifier { _, _ -> true }
             .addInterceptor(logging)
             .sslSocketFactory(sslContext.socketFactory, trustManager)
-            .build()
     }
 
 }
