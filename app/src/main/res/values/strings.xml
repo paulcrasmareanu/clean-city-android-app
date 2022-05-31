@@ -35,4 +35,8 @@
     <string name="delete_issue_text">Delete Issue</string>
     <string name="issue_title_text">Issue Title</string>
     <string name="sample_description_text">Sample description here</string>
+    <string name="add_image_text">Add Image</string>
+    <string name="no_selected_picture_text">No picture currently selected</string>
+    <string name="issue_photo_desc_text">Issue photo</string>
+    <string name="delete_photo_text">Delete photo</string>
 </resources>

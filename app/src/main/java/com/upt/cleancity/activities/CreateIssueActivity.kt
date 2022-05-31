@@ -1,8 +1,10 @@
 package com.upt.cleancity.activities
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -12,6 +14,7 @@ import com.upt.cleancity.service.IssueService
 import com.upt.cleancity.service.factory.IssueServiceFactory
 import com.upt.cleancity.utils.AppState
 import kotlinx.android.synthetic.main.activity_create_issue.*
+import kotlinx.android.synthetic.main.issue_create_edit_photo_layout.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,6 +24,7 @@ class CreateIssueActivity : AppCompatActivity() {
     companion object {
         const val TAG = "__CreateIssueActivity"
         const val ADD_MARKER = 200
+        const val IMAGE_PICK = 100
     }
 
     private lateinit var issueService: IssueService
@@ -28,6 +32,7 @@ class CreateIssueActivity : AppCompatActivity() {
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private var userId = AppState.loggedInUser.id
+    private var imageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,13 +43,37 @@ class CreateIssueActivity : AppCompatActivity() {
         val intent = intent
         latitude = intent.getDoubleExtra("MARKER_LATITUDE", 0.0)
         longitude = intent.getDoubleExtra("MARKER_LONGITUDE", 0.0)
+
+        removePictureButton.setOnClickListener {
+            imageUri = null
+            issueImage.setImageURI(null)
+            issueCreateNoImageSelected.visibility = View.VISIBLE
+            issuePictureLayout.visibility = View.GONE
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == RESULT_OK && requestCode == IMAGE_PICK && data != null) {
+            imageUri = data.data
+            issueImage.setImageURI(imageUri)
+            issueCreateNoImageSelected.visibility = View.GONE
+            issuePictureLayout.visibility = View.VISIBLE
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun performButtonFunctionalities(view: View) {
         when (view.id) {
             R.id.issueSubmitButton -> createIssue(issueCreateTitle.editText?.text.toString(), issueCreateDescription.editText?.text.toString())
-            R.id.issueCreateBackButton -> finish() //todo remove marker in this case
+            R.id.issueCreateBackButton -> finish()
+            R.id.issueCreateAddPictureButton -> addImageToView()
         }
+    }
+
+    private fun addImageToView() {
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(galleryIntent, IMAGE_PICK)
     }
 
     private fun createIssue(title: String, description: String) {
