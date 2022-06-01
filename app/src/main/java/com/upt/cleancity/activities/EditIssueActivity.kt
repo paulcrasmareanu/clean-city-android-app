@@ -8,16 +8,21 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.upt.cleancity.R
 import com.upt.cleancity.model.Issue
 import com.upt.cleancity.service.IssueService
 import com.upt.cleancity.service.factory.IssueServiceFactory
+import com.upt.cleancity.utils.AppState
+import com.upt.cleancity.utils.convertStringToUri
+import com.upt.cleancity.utils.convertUriToString
 import com.upt.cleancity.utils.toEditable
 import kotlinx.android.synthetic.main.activity_edit_issue.*
 import kotlinx.android.synthetic.main.issue_create_edit_photo_layout.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 
 class EditIssueActivity : AppCompatActivity() {
 
@@ -40,6 +45,10 @@ class EditIssueActivity : AppCompatActivity() {
 
         val intent = intent
         issue = intent!!.getSerializableExtra("ISSUE") as Issue
+
+        issue.attachmentUrl?.let {
+            imageUri = convertStringToUri(it)
+        }
 
         removePictureButton.setOnClickListener {
             imageUri = null
@@ -79,11 +88,20 @@ class EditIssueActivity : AppCompatActivity() {
 
         issue.title = issueEditTitle.editText!!.text.toString()
         issue.description = issueEditDescription.editText!!.text.toString()
+        if (issue.attachmentUrl == null) {
+            issue.attachmentUrl = ""
+        }
+
+        if (imageUri == null) {
+            issue.attachmentUrl = ""
+        }
 
         issueService.saveIssue(issue).enqueue(object : Callback<Issue> {
             override fun onResponse(call: Call<Issue>, response: Response<Issue>) {
                 Log.d(TAG, "updateIssue: onResponse()")
                 if (response.code() == 200 || response.code() == 204) {
+                    val editedIssue = response.body()!!
+                    changeOrDeleteIssuePicture(editedIssue)
                     setResult(UPDATE_ISSUE)
                     finish()
                 } else {
@@ -100,9 +118,78 @@ class EditIssueActivity : AppCompatActivity() {
         })
     }
 
+    private fun changeOrDeleteIssuePicture(editedIssue: Issue) {
+        if (editedIssue.attachmentUrl == null && imageUri != null) {
+            changeIssuePicture(editedIssue)
+        }
+        editedIssue.attachmentUrl?.let {
+            if (it == convertUriToString(imageUri!!)) {
+                goBackToViewIssue(editedIssue)
+            } else {
+                changeIssuePicture(editedIssue)
+            }
+        }
+        val storageReference = AppState.storageReference.child("issues")
+            .child(editedIssue.id!!)
+        storageReference.delete().addOnSuccessListener {
+            Log.d(TAG, "Successfully deleted issue image")
+            goBackToViewIssue(editedIssue)
+        }.addOnFailureListener {
+            Log.w(TAG, "Something went wrong during picture deletion", it)
+        }
+    }
+
+    private fun changeIssuePicture(editedIssue: Issue) {
+        val storageReference = AppState.storageReference.child("issues")
+            .child(editedIssue.id!!)
+
+        storageReference.putFile(imageUri!!).addOnSuccessListener {
+            storageReference.downloadUrl.addOnSuccessListener {
+                editedIssue.attachmentUrl = convertUriToString(it)
+
+                issueService.saveIssue(editedIssue).enqueue(object : Callback<Issue> {
+                    override fun onResponse(call: Call<Issue>, response: Response<Issue>) {
+                        Log.d(TAG, "updatePicture: onResponse()")
+                        if (response.code() == 200) {
+                            val savedIssue = response.body()!!
+                            goBackToViewIssue(savedIssue)
+                        } else {
+                            Log.w(CreateIssueActivity.TAG, "Error code: ${response.code()}")
+                            Toast.makeText(
+                                this@EditIssueActivity,
+                                "Something went wrong",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Issue>, t: Throwable) {
+                        Log.w(TAG, "updatePicture: onFailure()", t)
+                        Toast.makeText(
+                            this@EditIssueActivity,
+                            "Failed to update issue",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+            }
+        }.addOnFailureListener {
+            Log.w(TAG, it)
+        }
+    }
+
     private fun addImageToView() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, IMAGE_PICK)
+    }
+
+    private fun goBackToViewIssue(issue: Issue) {
+        val intent = Intent()
+        intent.putExtra("UPDATED_ISSUE_TITLE", issue.title)
+        intent.putExtra("UPDATED_ISSUE_DESCRIPTION", issue.description)
+        intent.putExtra("UPDATED_ISSUE_IMAGE", issue.attachmentUrl)
+        setResult(UPDATE_ISSUE, intent)
+        finish()
     }
 
     private fun isValidForm(): Boolean {
@@ -117,5 +204,12 @@ class EditIssueActivity : AppCompatActivity() {
     private fun loadIssueDetails() {
         issueEditTitle.editText?.text = issue.title.toEditable()
         issueEditDescription.editText?.text = issue.description.toEditable()
+        issue.attachmentUrl?.let {
+            if (it.isNotBlank()) {
+                issueEditNoImageSelected.visibility = View.GONE
+                issueEditPictureLayout.visibility = View.VISIBLE
+                Glide.with(this).load(imageUri).into(issueImage)
+            }
+        }
     }
 }

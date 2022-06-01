@@ -39,4 +39,5 @@
     <string name="no_selected_picture_text">No picture currently selected</string>
     <string name="issue_photo_desc_text">Issue photo</string>
     <string name="delete_photo_text">Delete photo</string>
+    <string name="fullscreen_image_text">Fullscreen image</string>
 </resources>

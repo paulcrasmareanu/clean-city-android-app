@@ -6,12 +6,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterInside
+import com.bumptech.glide.request.RequestOptions
 import com.upt.cleancity.R
 import com.upt.cleancity.model.Issue
 import com.upt.cleancity.service.IssueService
 import com.upt.cleancity.service.factory.IssueServiceFactory
 import com.upt.cleancity.utils.AppState
+import com.upt.cleancity.utils.convertStringToUri
 import kotlinx.android.synthetic.main.activity_view_issue.*
+import kotlinx.android.synthetic.main.issue_photo_layout.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,9 +46,16 @@ class ViewIssueActivity : AppCompatActivity() {
         getIssueFromDatabase()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        getIssueFromDatabase()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == UPDATE_ISSUE) {
-            recreate()
+            getIssueFromDatabase()
+//            recreate()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -109,12 +121,29 @@ class ViewIssueActivity : AppCompatActivity() {
     private fun loadIssueDetails(issue: Issue) {
         issueViewTitle.text = issue.title
         issueViewDescription.text = issue.description
+
+        issue.attachmentUrl?.let {
+            if (it.isNotBlank()) {
+                issueViewPicLayout.visibility = View.VISIBLE
+
+                Glide.with(this)
+                    .load(convertStringToUri(issue.attachmentUrl!!))
+                    .into(issueViewImage)
+
+                issueViewImage.setOnClickListener {
+                    val fullScreenIntent = Intent(this, FullscreenImageActivity::class.java)
+                    fullScreenIntent.putExtra("IMAGE_URI", issue.attachmentUrl)
+                    startActivity(fullScreenIntent)
+                }
+            }
+        }
+
         if (issue.ownerId == userId) {
             issueViewEditButton.visibility = View.VISIBLE
             issueViewDeleteButton.visibility = View.VISIBLE
         } else {
-            issueViewEditButton.visibility = View.INVISIBLE
-            issueViewDeleteButton.visibility = View.INVISIBLE
+            issueViewEditButton.visibility = View.GONE
+            issueViewDeleteButton.visibility = View.GONE
         }
     }
 }

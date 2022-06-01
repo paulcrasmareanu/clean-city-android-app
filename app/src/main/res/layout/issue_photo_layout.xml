@@ -4,30 +4,14 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.cardview.widget.CardView
+    <ImageView
+        android:id="@+id/issueViewImage"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        app:cardCornerRadius="4dp"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/issueViewImage"
-                android:layout_width="match_parent"
-                android:layout_height="190dp"
-                android:scaleType="fitCenter"
-                android:layout_centerHorizontal="true"
-                android:adjustViewBounds="true"
-                android:src="@mipmap/ic_launcher"
-                android:contentDescription="@string/add_image_text" />
-
-        </RelativeLayout>
-
-    </androidx.cardview.widget.CardView>
+        android:layout_height="190dp"
+        android:scaleType="fitCenter"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:src="@mipmap/ic_launcher"
+        android:contentDescription="@string/add_image_text" />
 
 </RelativeLayout>

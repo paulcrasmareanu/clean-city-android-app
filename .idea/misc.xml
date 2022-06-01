@@ -15,7 +15,12 @@
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/layout/activity_view_issue.xml" value="0.3140625" />
         <entry key="..\:/MasterProjects/clean-city-android-app/app/src/main/res/xml/network_security_config.xml" value="0.3177083333333333" />
         <entry key="app/src/main/res/layout/activity_create_issue.xml" value="0.2798913043478261" />
+        <entry key="app/src/main/res/layout/activity_edit_issue.xml" value="0.13134057971014493" />
+        <entry key="app/src/main/res/layout/activity_fullscreen_image.xml" value="0.13134057971014493" />
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.13134057971014493" />
+        <entry key="app/src/main/res/layout/activity_view_issue.xml" value="0.13677536231884058" />
+        <entry key="app/src/main/res/layout/issue_create_edit_photo_layout.xml" value="0.13134057971014493" />
+        <entry key="app/src/main/res/layout/issue_photo_layout.xml" value="0.13134057971014493" />
       </map>
     </option>
   </component>

@@ -23,6 +23,9 @@
         android:usesCleartextTraffic="true"
         android:vmSafeMode="true">
         <activity
+            android:name=".activities.FullscreenImageActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ViewIssueActivity"
             android:exported="false" />
         <activity
@@ -58,7 +61,7 @@
         <activity
             android:name=".activities.MapsActivity"
             android:exported="true"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
     </application>
 
 </manifest>
