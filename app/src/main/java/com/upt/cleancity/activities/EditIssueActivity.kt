@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.issue_create_edit_photo_layout.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 
 class EditIssueActivity : AppCompatActivity() {
 
@@ -102,8 +101,6 @@ class EditIssueActivity : AppCompatActivity() {
                 if (response.code() == 200 || response.code() == 204) {
                     val editedIssue = response.body()!!
                     changeOrDeleteIssuePicture(editedIssue)
-                    setResult(UPDATE_ISSUE)
-                    finish()
                 } else {
                     Log.w(CreateIssueActivity.TAG, "Error code: ${response.code()}")
                     Toast.makeText(this@EditIssueActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -119,23 +116,26 @@ class EditIssueActivity : AppCompatActivity() {
     }
 
     private fun changeOrDeleteIssuePicture(editedIssue: Issue) {
-        if (editedIssue.attachmentUrl == null && imageUri != null) {
-            changeIssuePicture(editedIssue)
+        if (editedIssue.attachmentUrl == null) {
+            if (imageUri != null) {
+                changeIssuePicture(editedIssue)
+            } else {
+                val storageReference = AppState.storageReference.child("issues")
+                    .child(editedIssue.id!!)
+                storageReference.delete().addOnSuccessListener {
+                    Log.d(TAG, "Successfully deleted issue image")
+                    goBackToViewIssue()
+                }.addOnFailureListener {
+                    Log.w(TAG, "Something went wrong during picture deletion", it)
+                }
+            }
         }
         editedIssue.attachmentUrl?.let {
             if (it == convertUriToString(imageUri!!)) {
-                goBackToViewIssue(editedIssue)
+                goBackToViewIssue()
             } else {
                 changeIssuePicture(editedIssue)
             }
-        }
-        val storageReference = AppState.storageReference.child("issues")
-            .child(editedIssue.id!!)
-        storageReference.delete().addOnSuccessListener {
-            Log.d(TAG, "Successfully deleted issue image")
-            goBackToViewIssue(editedIssue)
-        }.addOnFailureListener {
-            Log.w(TAG, "Something went wrong during picture deletion", it)
         }
     }
 
@@ -151,8 +151,7 @@ class EditIssueActivity : AppCompatActivity() {
                     override fun onResponse(call: Call<Issue>, response: Response<Issue>) {
                         Log.d(TAG, "updatePicture: onResponse()")
                         if (response.code() == 200) {
-                            val savedIssue = response.body()!!
-                            goBackToViewIssue(savedIssue)
+                            goBackToViewIssue()
                         } else {
                             Log.w(CreateIssueActivity.TAG, "Error code: ${response.code()}")
                             Toast.makeText(
@@ -183,12 +182,8 @@ class EditIssueActivity : AppCompatActivity() {
         startActivityForResult(galleryIntent, IMAGE_PICK)
     }
 
-    private fun goBackToViewIssue(issue: Issue) {
-        val intent = Intent()
-        intent.putExtra("UPDATED_ISSUE_TITLE", issue.title)
-        intent.putExtra("UPDATED_ISSUE_DESCRIPTION", issue.description)
-        intent.putExtra("UPDATED_ISSUE_IMAGE", issue.attachmentUrl)
-        setResult(UPDATE_ISSUE, intent)
+    private fun goBackToViewIssue() {
+        setResult(UPDATE_ISSUE)
         finish()
     }
 
