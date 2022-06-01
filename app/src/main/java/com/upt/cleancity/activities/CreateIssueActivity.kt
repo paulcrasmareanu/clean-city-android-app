@@ -88,7 +88,8 @@ class CreateIssueActivity : AppCompatActivity() {
             description = description,
             lat = latitude,
             long = longitude,
-            ownerId = userId
+            ownerId = userId,
+            attachmentUrl = ""
         )
 
         issueService.saveIssue(issue).enqueue(object : Callback<Issue> {
@@ -96,12 +97,11 @@ class CreateIssueActivity : AppCompatActivity() {
                 Log.d(TAG, "saveIssue: onResponse()")
                 if (response.code() == 200) {
                     val savedIssue = response.body()!!
-                    val intent = Intent()
-                    intent.putExtra("ISSUE_ID", savedIssue.id)
-                    intent.putExtra("ISSUE_LATITUDE", savedIssue.lat)
-                    intent.putExtra("ISSUE_LONGITUDE", savedIssue.long)
-                    setResult(ADD_MARKER, intent)
-                    finish()
+                    if (imageUri != null) {
+                        uploadImage(savedIssue)
+                    } else {
+                        navigateBackToMaps(savedIssue)
+                    }
                 } else {
                     Log.w(TAG, "Error code: ${response.code()}")
                     Toast.makeText(this@CreateIssueActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -116,6 +116,34 @@ class CreateIssueActivity : AppCompatActivity() {
         })
     }
 
+    private fun uploadImage(issue: Issue) {
+        val storageReference = AppState.storageReference.child("issues")
+            .child(issue.id!!)
+        storageReference.putFile(imageUri!!).addOnSuccessListener {
+            storageReference.downloadUrl.addOnSuccessListener { uri ->
+                issue.attachmentUrl = uri.toString()
+                issueService.saveIssue(issue).enqueue(object : Callback<Issue> {
+                    override fun onResponse(call: Call<Issue>, response: Response<Issue>) {
+                        Log.d(TAG, "uploadImage: onResponse()")
+                        if (response.code() == 200) {
+                            val savedIssue = response.body()!!
+                            navigateBackToMaps(savedIssue)
+                        } else {
+                            Log.w(TAG, "Error code: ${response.code()}")
+                            Toast.makeText(this@CreateIssueActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Issue>, t: Throwable) {
+                        Log.w(TAG, "saveIssue: onFailure()", t)
+                        Toast.makeText(this@CreateIssueActivity, "Failed to save issue", Toast.LENGTH_SHORT).show()
+                    }
+
+                })
+            }
+        }
+    }
+
     private fun isValidForm(): Boolean {
         when {
             issueCreateTitle.editText?.text.toString().isBlank() -> this.issueCreateTitle?.error = "Required"
@@ -123,5 +151,14 @@ class CreateIssueActivity : AppCompatActivity() {
             else -> return true
         }
         return false
+    }
+
+    private fun navigateBackToMaps(issue: Issue) {
+        val intent = Intent()
+        intent.putExtra("ISSUE_ID", issue.id)
+        intent.putExtra("ISSUE_LATITUDE", issue.lat)
+        intent.putExtra("ISSUE_LONGITUDE", issue.long)
+        setResult(ADD_MARKER, intent)
+        finish()
     }
 }
