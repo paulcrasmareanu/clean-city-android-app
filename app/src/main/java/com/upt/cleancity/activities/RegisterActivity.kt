@@ -52,7 +52,7 @@ class RegisterActivity : AppCompatActivity() {
             lastName = lastName,
             password = password,
             confirmPassword = passwordConfirm,
-            role = 1
+            role = 2
         )
 
         createUser(user)

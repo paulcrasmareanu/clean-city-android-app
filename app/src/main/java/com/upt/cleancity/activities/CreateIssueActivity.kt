@@ -32,6 +32,7 @@ class CreateIssueActivity : AppCompatActivity() {
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private var userId = AppState.loggedInUser.id
+    private var userFullName = "${AppState.loggedInUser.firstName} ${AppState.loggedInUser.lastName}"
     private var imageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,6 +90,7 @@ class CreateIssueActivity : AppCompatActivity() {
             lat = latitude,
             long = longitude,
             ownerId = userId,
+            ownerFullName = userFullName,
             attachmentUrl = ""
         )
 

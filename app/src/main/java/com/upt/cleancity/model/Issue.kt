@@ -10,5 +10,6 @@ data class Issue (
     var lat: Double = 0.0,
     var long: Double = 0.0,
     var ownerId: String = "",
+    var ownerFullName: String = "",
     var attachmentUrl: String? = ""
 ) : Serializable
