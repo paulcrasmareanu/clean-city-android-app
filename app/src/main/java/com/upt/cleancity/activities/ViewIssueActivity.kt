@@ -7,8 +7,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterInside
-import com.bumptech.glide.request.RequestOptions
 import com.upt.cleancity.R
 import com.upt.cleancity.model.Issue
 import com.upt.cleancity.service.IssueService
@@ -100,6 +98,14 @@ class ViewIssueActivity : AppCompatActivity() {
                 Log.d(TAG, "deleteIssue: onResponse()")
 
                 if (response.code() == 200 || response.code() == 204) {
+                    val storageReference = AppState.storageReference.child("issues")
+                        .child(issueId)
+                    storageReference.delete().addOnSuccessListener {
+                        Log.d(EditIssueActivity.TAG, "Successfully deleted issue image")
+                    }.addOnFailureListener {
+                        Log.w(EditIssueActivity.TAG, "Something went wrong during picture deletion", it)
+                    }
+
                     val intent = Intent()
                     intent.putExtra("ISSUE_ID", issueId)
                     setResult(DELETE_MARKER, intent)
