@@ -34,7 +34,7 @@
         <activity
             android:name=".activities.CreateIssueActivity"
             android:exported="false"
-            android:label="@string/title_activity_create_issue"
+            android:label="@string/app_name"
             android:theme="@style/Theme.CleanCity.NoActionBar" />
         <activity
             android:name=".activities.LoginActivity"
@@ -61,7 +61,7 @@
         <activity
             android:name=".activities.MapsActivity"
             android:exported="true"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/app_name" />
     </application>
 
 </manifest>
